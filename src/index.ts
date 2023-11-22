@@ -6,7 +6,12 @@ const port = process.env.PORT || 3001
 const jsonBody = express.json()
 app.use(jsonBody)
 
-const db = {
+type CoursesType = {
+    id: number;
+    title: string;
+}
+
+const db: { courses: CoursesType[] } = {
     courses: [
         {id: 0, title: "Frontend"},
         {id: 1, title: "Backend"},
@@ -21,7 +26,10 @@ app.get('/courses', (req: Request, res: Response) => {
     res.json(db.courses)
 })
 
-app.get('/courses/:id', (req: Request, res: Response) => {
+app.get('/courses/:id', (
+    req: Request<{ id: string }>,
+    res: Response<CoursesType>
+) => {
     const requestId = +req.params.id
     const foundCourse = db.courses.find(i => i.id === requestId)
 
@@ -33,7 +41,10 @@ app.get('/courses/:id', (req: Request, res: Response) => {
     res.json(foundCourse)
 })
 
-app.post('/courses', (req, res) => {
+app.post('/courses', (
+    req: Request<{}, {}, { title: string }>,
+    res: Response<CoursesType>
+) => {
     if (!req.body.title) {
         res.sendStatus(400)
         return
@@ -47,7 +58,10 @@ app.post('/courses', (req, res) => {
     res.json(newCourse)
 })
 
-app.put('/courses/:id', (req, res) => {
+app.put('/courses/:id', (
+    req: Request<{ id: string }, {}, { title: string }>,
+    res: Response
+) => {
     if (!req.body.title) {
         res.sendStatus(400)
         return
